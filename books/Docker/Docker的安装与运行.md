@@ -50,7 +50,6 @@ root下执行命令
 - 登陆后，点击顶部菜单“加速器”
 - 拷贝“加速器”命令并在host中执行
 - 重启Docker deamon
-
   ```
     # systemctl restart docker.service
   ```
