@@ -9,3 +9,4 @@ Machine Learning DataSets UCI:http://archive.ics.uci.edu/ml/datasets.html
 
 Ladder:https://www.jianshu.com/p/ec74607650a2
 
+Open book project: http://www.openbookproject.net/
