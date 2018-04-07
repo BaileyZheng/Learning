@@ -12,3 +12,5 @@ Ladder:https://www.jianshu.com/p/ec74607650a2
 Open book project: http://www.openbookproject.net/
 
 图灵社区： http://www.ituring.com.cn/
+
+Numpy and Scipy Documentation: https://docs.scipy.org/doc/
