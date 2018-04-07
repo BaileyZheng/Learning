@@ -14,3 +14,5 @@ Open book project: http://www.openbookproject.net/
 图灵社区： http://www.ituring.com.cn/
 
 Numpy and Scipy Documentation: https://docs.scipy.org/doc/
+
+mrjob v0.5.10 documentation: http://pythonhosted.org/mrjob/
