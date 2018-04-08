@@ -17,3 +17,5 @@ mrjob v0.5.10 documentation: http://pythonhosted.org/mrjob/
 Vote Smart: http://www.votesmart.org/
 
 MachineLearninginAction: https://www.manning.com/books/machine-learning-in-action
+
+Hacker books: https://www.jianshu.com/p/a020ace308d0
