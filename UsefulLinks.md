@@ -21,3 +21,5 @@ MachineLearninginAction: https://www.manning.com/books/machine-learning-in-actio
 Hacker books: https://www.jianshu.com/p/a020ace308d0
 
 Machine learning for cyber security: https://github.com/wtsxDev/Machine-Learning-for-Cyber-Security
+
+MLSec Project: https://www.mlsecproject.org/
