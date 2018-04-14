@@ -25,3 +25,5 @@ Machine learning for cyber security: https://github.com/wtsxDev/Machine-Learning
 MLSec Project: https://www.mlsecproject.org/
 
 Security+Big data+Machine learning： http://www.covert.io/
+
+python-excel: http://www.python-excel.org/
