@@ -27,3 +27,5 @@ MLSec Project: https://www.mlsecproject.org/
 Security+Big data+Machine learning： http://www.covert.io/
 
 python-excel: http://www.python-excel.org/
+
+scikit-learn documentation: http://sklearn.apachecn.org/cn/0.19.0/
