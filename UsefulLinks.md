@@ -29,3 +29,5 @@ Security+Big data+Machine learning： http://www.covert.io/
 python-excel: http://www.python-excel.org/
 
 scikit-learn documentation: http://sklearn.apachecn.org/cn/0.19.0/
+
+Linux Package Search: https://pkgs.org
