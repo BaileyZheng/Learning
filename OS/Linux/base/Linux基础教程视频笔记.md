@@ -112,12 +112,16 @@ Init（run level -/etc/inittab)
 - ls
 ```
 ls -l
-将文件或者目录竖着排列，以d开头的是目录，以-开头的是文件
-如：drwxr-xr-x  3   root    root  4096  Mar 13 16:00  apache
+将文件或者目录竖着排列，以d开头的是目录，以-开头的是文件，以l开头是链接
+如：drwxr-xr-x  3   root    root  4096  Mar 13 16:00  apache
    目录 权限   所占空间 创建人 所有人       创建时间        文件或目录名
 
 ls -m
 适应宽度，横着排
+
+ls -R
+按树状结构列
+
 ```
 - rmdir
 ```
@@ -132,5 +136,77 @@ rm -rf
 touch filename
 创建文件
 ```
+
+- vi
+vi有两种模式，一种是命令格式，另一种是编辑模式。
+```
+dd:删除一行
+dw：删除一个单词
+o：插入一行
+O：上面插入一行
+```
+
+- more
+```
+more filename
+查看文件内容
+```
+
+- cat/tac
+```
+cat filename:正序
+tac filename：倒序
+```
+
+- head/tail
+```
+head -n filename
+头n行
+tail -n filename
+尾n行
+```
+
+- find
+```
+find /etc -name *local
+```
+
+- whereis
+```
+whereis ls
+whereis 命令
+```
+
+- echo 
+```
+echo $PATH
+```
+
+- ln
+```
+ln filename linkname
+硬链接，同步
+
+ln -s filename linkname
+软链接，同步
+软链接相当于windows下的快捷方式，硬链接相当于原文件复制一份
+原文件删了之后硬链接还可以查到文件，但是软链接不可以
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
