@@ -193,6 +193,118 @@ ln -s filename linkname
 原文件删了之后硬链接还可以查到文件，但是软链接不可以
 ```
 
+- 用户与用户组 
+```
+useradd username
+添加用户,在home下会增加一个主目录
+passwd username
+为添加的用户设置密码
+/etc/passwd文件里面是所有的用户信息
+如 testuser:x:501:502::/home/testuser:/bin/bash
+   用户名     用户组 ID   主目录         用到的shell
+shell有csh、bsh、ksh、bash、sh 
+/etc/group文件里面记录用户组，如果添加一个用户没有指定组，那么就默认添加一个和用户名一样的组
+groupadd groupname
+添加一个groupname的组
+useradd username -g groupname
+将用户username添加到groupname这个组
+usermod -g groupname username
+将用户username的组改成groupname
+userdel username
+删除用户，但是home下面的文件依然存在
+删除目录：rm -rf username
+su(switch user) username：切换用户，当一个新的用户登录时，默认的当前目录是主目录
+```
+
+- 文件权限
+```
+ls -l
+-rw-r--r-- 1 root root 56 Jun 23 12:44 haha
+除了第一位表示文件（-）、目录（d）、链接（l）外还有九位，每三位一组
+r代表只读，w代表写，x代表执行，---代表什么权限都没有
+第一组代表文件的所有者的权限
+第二组代表文件的所有者同组的其他人的权限
+第三组代表剩下的人对文件的权限
+chmod +x haha ：-rwxr-xr-x
+chmod u+x haha : -rwxr--r--
+chmod g+x haha : -rw-r-xr--
+chmod o+x haha : -rw-r--r-x
+chmod 755 haha : -rwxr-xr-x
+chown haha username : 修改haha的所有者
+```
+
+- wc
+统计指定文本文件的行数、字数、字符数  
+```
+wc -cmlLw filename
+-c：bytes，字节数
+-m：chars，字符数
+-l：lines，行数
+-L：max-line-length，最长行的长度
+-w：words，字数
+```
+
+- grep
+```
+grep chars filename：查文本文件的哪一行语句包含要找的字符
+```
+
+|命令|功能|
+|-|-|
+|date|显示和设置日期时间|
+|stat|显示指定文件的相关信息|
+|who、w|显示在线登录用户|
+|whoami|显示用户自己的身份|
+|id|显示当前用户的id信息|
+|hostname|显示主机名称|
+|uname|显示操作系统信息|
+|dmesg|显示系统启动信息|
+|du|显示指定的文件（目录）已使用的磁盘空间的总量|
+|df|显示文件系统磁盘空间的使用情况|
+|free|显示当前内存和交换空间的使用情况|
+|fdisk -l|显示磁盘信息|
+|locale|显示当前语言环境|
+
+- 管道
+```
+ls -Rl /etc | more
+把上一个命令执行的结果交给下一个命令
+cat /etc/passwd | wc
+统计/etc/passwd的行数、字数和字节数
+cat /etc/passwd | grep lrj
+查lrj用户名的信息
+dmesg | grep eth0
+查第一块网卡的启动信息
+man bash | col -b > bash.txt
+把说明文件的内容输出成纯文本文件时，控制字符会变成乱码，col指令能有效过滤这些控制字符
+col -b:过滤掉文件里面的控制字符
+ls -l | grep "^d"
+只列出目录，"^d"是正则表达式，^表示一行开头
+ls -l * | grep "^-" | wc -l
+当前目录下有多少文件
+```
+
+- 命令替换
+```
+wall:warning all，通知所有人，打开多个terminal，每个terminal都会收到广播信息（警告信息）
+wall `date`:把``中命令执行的结果通知所有人
+```
+
+- 重定向
+```
+ls > filename
+将命令执行的结果输入到filename文件里
+ls >> filename
+将命令执行的结果追加到filename文件里
+lssssss 2> filename
+2>：错误重定向
+wall < filename
+重定向输入，将filename的内容通知所有人
+```
+
+- 如何修改系统的默认启动级别
+
+## 文件共享
 
 
 
@@ -210,3 +322,5 @@ ln -s filename linkname
 
 
 
+## 参考
+[1] https://www.onmpw.com/tm/xwzj/opersys_203.html
