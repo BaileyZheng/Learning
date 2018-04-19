@@ -1,4 +1,4 @@
-# TCP/IP详解卷1：协议读书笔记
+# TCP/IP详解卷1：协议读书笔记1
 ## 一、概述
 ### 1.1分层
 TCP/IP通常被认为是一个四层协议系统：
@@ -235,6 +235,7 @@ SLIP协议定义的帧格式：  
 - 如果IP报文中某个字符为END，就连续传输两个字节0xdb和0xdc，0xdb被称作SLIP的ESC字符，但它与ASCII码的ESC字符（0x1b）不同  
 - 如果IP报文中某个字符为SLIP的ESC字符，就连续传输两个字节0xdb和0xdd  
 ![SLIP报文的封装](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/2018-04-18_101101.png)  
+
 图中串行线路上传输的总字节数是原IP报文长度再加4个字节。  
 SLIP的缺陷：  
 - 每一端必须知道对方的IP地址，没办法把本端的IP地址通知给另一端  
@@ -254,6 +255,7 @@ PPP，点对点协议，修改了SLIP的所有缺陷。PPP包括以下三部分�
 - 建立、配置及测试数据链路的链路控制协议（LCP：Link Control Protocol），允许通信双方进行协商，以确定不同的选项  
 - 针对不同网络层协议的网络控制协议（NCP，Network Control Protocol）体系。  
 ![PPP数据帧的格式](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/PPP%E6%95%B0%E6%8D%AE%E5%B8%A7%E7%9A%84%E6%A0%BC%E5%BC%8F.jpg)  
+
 PPP数据帧格式：  
 - 每一帧都以标志字符0x7e开始和结束，紧接着是一个地址字节，值始终是0xff，然后是一个值为0x03的控制字节。  
 - 协议字段，当其值为0x0021时，表示信息字段是一个IP数据报，值为0xc021时，表示信息字段是链路控制数据，值为0x8021时，表示信息字段是网络控制数据。  
@@ -277,6 +279,7 @@ PPP与SLIP的比较：  
 ### 环回接口
 Loopback Interface允许运行在同一台主机上的客户程序和服务器程序通过TCP/IP进行通信。A类网络号127就是为环回接口预留的，127.0.0.1这个IP地址分配给这个接口，命名为localhost，一个传给环回接口的IP数据报不能在任何网络上出现。大多数产品对于目的端地址为环回地址的情况，会完成传输层和网络层的所有过程，当IP数据报离开网络层时把它返回给自己。  
 ![环回接口处理IP数据报的过程](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/%E7%8E%AF%E5%9B%9E%E6%8E%A5%E5%8F%A3%E5%A4%84%E7%90%86IP%E6%95%B0%E6%8D%AE%E6%8A%A5%E7%9A%84%E8%BF%87%E7%A8%8B.jpg)  
+
 注意：  
 - 传给换回地址（127.0.0.1）的任何数据均作为IP输入  
 - 传给广播地址或多播地址的数据报复制一份传给环回接口，然后送到以太网上，因为广播传送和多播传送的定义包含主机本身  
@@ -311,6 +314,7 @@ IP提供不可靠的数据传输服务的意思是它不能保证IP数据报成�
 IP提供无连接的数据传送服务的意思是IP不维护任何关于后续数据报的状态信息，每个数据报的处理都是相对独立的。也说明IP数据报可以不按发送顺序接收，如果一信源向相同的信宿发送两个连续的数据报，每个数据报都是独立地进行路由选择，可能选择不同的路线，并且后发送的数据报可能在先发送的数据报之前到达。  
 ### IP首部
 ![IP数据报格式及首部中的各字段.jpg](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/IP%E6%95%B0%E6%8D%AE%E6%8A%A5%E6%A0%BC%E5%BC%8F%E5%8F%8A%E9%A6%96%E9%83%A8%E4%B8%AD%E7%9A%84%E5%90%84%E5%AD%97%E6%AE%B5.jpg)  
+
 普通的IP首部长20个字节。最高位在左边，记为0bit，最低位在右边，记为32bit。  
 4个字节的32bit值以下面的次序传输：  
 - 0~7bit  
@@ -375,8 +379,10 @@ IP路由选择机制的特性：  
 - 为一个网络指定一个路由器，而不必为每个主机指定一个路由器，这是IP路由选择机制的另一个基本特性。这么做可以极大地缩小路由表的规模。  
 在同一个以太网上两个主机数据传输过程图：
 ![数据报从主机bsdi到sun的传送过程](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/2018-04-18_154035.png)  
+
 不在同一个以太网上两个主机数据传输过程图：  
 ![从bsdi到ftp.uu.net(192.48.96.9)的初始路径](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/2018-04-18_181447.png)  
+
 对于上例的一些关键点：  
 - 所有主机和路由器都使用了默认路由，大多数主机和一些路由器可以用默认路由来处理任何目的，除非它在本地局域网上。  
 - 数据报中的目的IP地址始终不发生任何变化，所有的路由选择决策都是基于这个目的IP地址。  
@@ -386,24 +392,55 @@ IP路由选择机制的特性：  
 这么做的原因是：A类和B类地址为主机号分配了太多的空间，可分别容纳的主机数为2^24-2和2^16-2（全0或全1的主机号无效）.事实上，在一个网络中并不安排这么多的主机。  
 在InterNIC获得某类IP网络号后，由当地的系统管理员来进行分配，由他决定是否建立子网，以及分配多少比特给子网号和主机号。  
 ![B类地址的一种子网编址](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/B%E7%B1%BB%E5%9C%B0%E5%9D%80%E7%9A%84%E4%B8%80%E7%A7%8D%E5%AD%90%E7%BD%91%E7%BC%96%E5%9D%80.jpg)  
+
 此B类网络地址（140.252）剩下的16bit中，8bit用于子网号，8bit用于主机号，允许有254个子网，每个子网可以有254台主机。  
 大多数的子网例子都是B类地址，因为C类可用的比特数较少，A类地址本身就很少。  
 子网对外部路由器来说隐藏了内部网络组织的细节。  
 ![网络noao.edu(140.252)中的大多数子网安排](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/%E7%BD%91%E7%BB%9Cnoao.edu(140.252)%E4%B8%AD%E7%9A%84%E5%A4%A7%E5%A4%9A%E6%95%B0%E5%AD%90%E7%BD%91%E5%AE%89%E6%8E%92.jpg)  
+
 采用子网的好处是，可以由一台路由器提供Internet的接入，从而可以缩小Internet路由表的规模。B类地址140.252被划分为若干子网的事实对于所有子网以外的Internet路由器都是透明的。但是  子网对于子网内部的路由器是不透明的。如，一份来自Internet的数据报到达gateway，它的目的地址是140.252.57.1，路由器gateway需要知道子网号是57，然后把它送到kpno，同样，kpno必须把数据报送到R55，最后由R55把它送到R57.  
 
 ### 子网掩码
 任何主机在引导时进行的部分配置是指定主机IP地址。大多数系统把IP地址存在一个磁盘文件里供引导时读用。  
 除了IP地址以外，主机还需要知道有多少比特用于子网号及多少比特用于主机号。这是在引导过程中通过子网掩码来确定的。掩码是一个32bit的值，其中值为1的比特留给网络号和子网号，为0的比特留给主机号。  
 ![两种不同的B类地址子网掩码的例子](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/2018-04-18_193750.png)  
+
 图中第一个例子子网号和主机号都是8bit宽；第二个例子是一个B类地址划分成10bit的子网号和6bit的主机号。  
 子网掩码常使用十六进制来表示，当界限不是一个字节时，子网掩码是一个比特掩码。  
 在给定IP地址和子网掩码以后，主机就可以确定IP数据报的目的是本子网上的主机，本网络中其他子网中的主机还是其他网络上的主机。  
 ![使用子网掩码的两个B类地址之间的比较](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/2018-04-18_194812.png)  
 
+
 ### 特殊情况的IP地址
+![特殊情况的IP地址](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/2018-04-19_084558.png)  
 
+其中0表示所有比特位全为0，-1表示所有的比特位全为1，netid、subnetid和hostid分别表示不为全0或全1的对应字段，子网号栏为空表示该地址没有进行子网划分。  
+表的头两项是特殊的源地址网络号为0，如主机使用BOOTP协议确定本机IP地址时只能作为初始化过程中的源地址出现，中间项是特殊的换回地址，最后四项是广播地址。  
+### 子网例子
+![子网中的主机和网络安排](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/subnet.jpg)  
 
+在子网13中有两个分离的网络：一个以太网和一个点对点链路（点对点链路一般在两端都需要IP地址）。  
+将来可能会有更多的主机和网络，为了不让主机跨越不同的网络就得使用不同的子网号，解决方案：把子网号从8bit扩充到11bit，把主机号从8bit减为5bit。这就是所谓的变长子网。  
+![变长子网](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/2018-04-19_154210.png)  
+
+11位子网号中的前8bit始终是13，在剩下的3bit中，用二进制001表示以太网，010表示点对点SLIP链路。  
+![子网的IP地址](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/2018-04-19_154836.png)   
+
+sun和bsdi具有路由器的功能，因为它们是多接口的，可以把分组数据从一个接口转发到另一个接口。  
+表中最后一行是以子网为目的的广播地址。  
+
+### 其他
+- ifconfig命令
+```
+ifconfig -a ：在所有接口报告的选项
+```
+- netstat命令
+```
+netstat -in
+-i将打印出接口信息
+-n打印出IP地址，而不是主机名
+该命令打印出每个接口的MTU、输入分组数、输入错误、输出分组数、输出错误、冲突以及当前的输出队列长度。
+```
 
 
 
