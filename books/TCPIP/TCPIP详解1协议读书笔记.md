@@ -108,7 +108,7 @@ UDP数据与TCP数据基本一致，唯一的区别是UDP传给IP的信息单元
 ### 1.6 分用
 当目的主机收到一个以太网数据帧时，数据就从协议栈由底向上升，同时去掉各层协议加上的报文首部。每层协议盒都要检查报文首部中的协议标识，以确定接收数据的上层协议。这个过程称作分用。
 
-![以太网数据帧的分用过程](https://github.com/Balabalabalala/Learning/images/2018-04-17_225857.png)
+![以太网数据帧的分用过程](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/2018-04-17_225857.png)
 
 ICMP和IGMP一方面是IP的附属协议，另一方面，ICMP和IGMP报文都被封装在IP数据报中。
 
@@ -214,7 +214,7 @@ TCP/IP协议族分四层：链路层、网络层、运输层和应用层，每�
 
 RFC 894是最常用的封装格式。
 
-![IEEE 802.2/802.3（RFC 1024）和以太网的封装格式（RFC 894）](https://github.com/Balabalabalala/Learning/images/2018-04-18_093627.png)
+![IEEE 802.2/802.3（RFC 1024）和以太网的封装格式（RFC 894）](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/2018-04-18_093627.png)
 
 两种帧格式都采用48bit（6字节）的目的地址和源地址，802.3允许使用16bit的地址，但一般是48bit地址。
 
@@ -234,7 +234,7 @@ SLIP协议定义的帧格式：  
 - IP数据报以一个称作END（0xc0）的特殊字符结束。为了防止数据报到来之前的线路噪声被当成数据报内容，在数据报的开始处也传一个END字符（在有噪声的情况下，END字符结束这份错误的报文，错误的报文交给上层后，发现其内容无意义而丢弃）  
 - 如果IP报文中某个字符为END，就连续传输两个字节0xdb和0xdc，0xdb被称作SLIP的ESC字符，但它与ASCII码的ESC字符（0x1b）不同  
 - 如果IP报文中某个字符为SLIP的ESC字符，就连续传输两个字节0xdb和0xdd  
-![SLIP报文的封装](https://github.com/Balabalabalala/Learning/images/2018-04-18_101101.png)  
+![SLIP报文的封装](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/2018-04-18_101101.png)  
 图中串行线路上传输的总字节数是原IP报文长度再加4个字节。  
 SLIP的缺陷：  
 - 每一端必须知道对方的IP地址，没办法把本端的IP地址通知给另一端  
@@ -253,7 +253,7 @@ PPP，点对点协议，修改了SLIP的所有缺陷。PPP包括以下三部分�
 - 在串行链路上封装IP数据报的方法，PPP既支持数据为8位和无奇偶检验的异步模式，也支持面向比特的同步链接  
 - 建立、配置及测试数据链路的链路控制协议（LCP：Link Control Protocol），允许通信双方进行协商，以确定不同的选项  
 - 针对不同网络层协议的网络控制协议（NCP，Network Control Protocol）体系。  
-![PPP数据帧的格式](https://github.com/Balabalabalala/Learning/images/PPP数据帧的格式.jpg)  
+![PPP数据帧的格式](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/PPP%E6%95%B0%E6%8D%AE%E5%B8%A7%E7%9A%84%E6%A0%BC%E5%BC%8F.jpg)  
 PPP数据帧格式：  
 - 每一帧都以标志字符0x7e开始和结束，紧接着是一个地址字节，值始终是0xff，然后是一个值为0x03的控制字节。  
 - 协议字段，当其值为0x0021时，表示信息字段是一个IP数据报，值为0xc021时，表示信息字段是链路控制数据，值为0x8021时，表示信息字段是网络控制数据。  
@@ -276,7 +276,7 @@ PPP与SLIP的比较：  
 
 ### 环回接口
 Loopback Interface允许运行在同一台主机上的客户程序和服务器程序通过TCP/IP进行通信。A类网络号127就是为环回接口预留的，127.0.0.1这个IP地址分配给这个接口，命名为localhost，一个传给环回接口的IP数据报不能在任何网络上出现。大多数产品对于目的端地址为环回地址的情况，会完成传输层和网络层的所有过程，当IP数据报离开网络层时把它返回给自己。  
-![环回接口处理IP数据报的过程](https://github.com/Balabalabalala/Learning/images/环回接口处理IP数据报的过程.jpg)  
+![环回接口处理IP数据报的过程](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/%E7%8E%AF%E5%9B%9E%E6%8E%A5%E5%8F%A3%E5%A4%84%E7%90%86IP%E6%95%B0%E6%8D%AE%E6%8A%A5%E7%9A%84%E8%BF%87%E7%A8%8B.jpg)  
 注意：  
 - 传给换回地址（127.0.0.1）的任何数据均作为IP输入  
 - 传给广播地址或多播地址的数据报复制一份传给环回接口，然后送到以太网上，因为广播传送和多播传送的定义包含主机本身  
@@ -310,7 +310,7 @@ TCP/IP成功的原因之一就是它几乎能在任何数据链路技术上运�
 IP提供不可靠的数据传输服务的意思是它不能保证IP数据报成功到达目的地，IP仅提供最好的传输服务，如果发生某种错误，如某个路由器暂时用完了缓冲区，IP处理错误的算法是：丢弃该数据报，然后发送ICMP消息报给信源端。任何要求的可靠性必须由上层提供（如TCP）。  
 IP提供无连接的数据传送服务的意思是IP不维护任何关于后续数据报的状态信息，每个数据报的处理都是相对独立的。也说明IP数据报可以不按发送顺序接收，如果一信源向相同的信宿发送两个连续的数据报，每个数据报都是独立地进行路由选择，可能选择不同的路线，并且后发送的数据报可能在先发送的数据报之前到达。  
 ### IP首部
-![IP数据报格式及首部中的各字段.jpg](https://github.com/Balabalabalala/Learning/images/IP数据报格式及首部中的各字段.jpg)  
+![IP数据报格式及首部中的各字段.jpg](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/IP%E6%95%B0%E6%8D%AE%E6%8A%A5%E6%A0%BC%E5%BC%8F%E5%8F%8A%E9%A6%96%E9%83%A8%E4%B8%AD%E7%9A%84%E5%90%84%E5%AD%97%E6%AE%B5.jpg)  
 普通的IP首部长20个字节。最高位在左边，记为0bit，最低位在右边，记为32bit。  
 4个字节的32bit值以下面的次序传输：  
 - 0~7bit  
@@ -374,9 +374,9 @@ IP路由选择机制的特性：  
 - 完整主机地址匹配在网络号匹配前执行，只有当它们都失败后才选择默认路由，默认路由，以及下一站路由器发送的ICMP间接报文（如果为数据报选择了错误的默认路由），是IP路由选择机制中功能强大的特性。  
 - 为一个网络指定一个路由器，而不必为每个主机指定一个路由器，这是IP路由选择机制的另一个基本特性。这么做可以极大地缩小路由表的规模。  
 在同一个以太网上两个主机数据传输过程图：
-![数据报从主机bsdi到sun的传送过程](https://github.com/Balabalabalala/Learning/images/2018-04-18_154035.png)  
+![数据报从主机bsdi到sun的传送过程](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/2018-04-18_154035.png)  
 不在同一个以太网上两个主机数据传输过程图：  
-![从bsdi到ftp.uu.net(192.48.96.9)的初始路径](https://github.com/Balabalabalala/Learning/images/2018-04-18_181447.png)  
+![从bsdi到ftp.uu.net(192.48.96.9)的初始路径](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/2018-04-18_181447.png)  
 对于上例的一些关键点：  
 - 所有主机和路由器都使用了默认路由，大多数主机和一些路由器可以用默认路由来处理任何目的，除非它在本地局域网上。  
 - 数据报中的目的IP地址始终不发生任何变化，所有的路由选择决策都是基于这个目的IP地址。  
@@ -385,21 +385,21 @@ IP路由选择机制的特性：  
 现在所有的主机都要求支持子网编址，不是把IP地址看成由单纯的一个网络号和一个主机号组成，而是把主机号再分成一个子网号和一个主机号。  
 这么做的原因是：A类和B类地址为主机号分配了太多的空间，可分别容纳的主机数为2^24-2和2^16-2（全0或全1的主机号无效）.事实上，在一个网络中并不安排这么多的主机。  
 在InterNIC获得某类IP网络号后，由当地的系统管理员来进行分配，由他决定是否建立子网，以及分配多少比特给子网号和主机号。  
-![B类地址的一种子网编址](https://github.com/Balabalabalala/Learning/images/B类地址的一种子网编址.jpg)  
+![B类地址的一种子网编址](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/B%E7%B1%BB%E5%9C%B0%E5%9D%80%E7%9A%84%E4%B8%80%E7%A7%8D%E5%AD%90%E7%BD%91%E7%BC%96%E5%9D%80.jpg)  
 此B类网络地址（140.252）剩下的16bit中，8bit用于子网号，8bit用于主机号，允许有254个子网，每个子网可以有254台主机。  
 大多数的子网例子都是B类地址，因为C类可用的比特数较少，A类地址本身就很少。  
 子网对外部路由器来说隐藏了内部网络组织的细节。  
-![网络noao.edu(140.252)中的大多数子网安排](https://github.com/Balabalabalala/Learning/images/网络noao.edu(140.252)中的大多数子网安排.jpg)  
+![网络noao.edu(140.252)中的大多数子网安排](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/%E7%BD%91%E7%BB%9Cnoao.edu(140.252)%E4%B8%AD%E7%9A%84%E5%A4%A7%E5%A4%9A%E6%95%B0%E5%AD%90%E7%BD%91%E5%AE%89%E6%8E%92.jpg)  
 采用子网的好处是，可以由一台路由器提供Internet的接入，从而可以缩小Internet路由表的规模。B类地址140.252被划分为若干子网的事实对于所有子网以外的Internet路由器都是透明的。但是  子网对于子网内部的路由器是不透明的。如，一份来自Internet的数据报到达gateway，它的目的地址是140.252.57.1，路由器gateway需要知道子网号是57，然后把它送到kpno，同样，kpno必须把数据报送到R55，最后由R55把它送到R57.  
 
 ### 子网掩码
 任何主机在引导时进行的部分配置是指定主机IP地址。大多数系统把IP地址存在一个磁盘文件里供引导时读用。  
 除了IP地址以外，主机还需要知道有多少比特用于子网号及多少比特用于主机号。这是在引导过程中通过子网掩码来确定的。掩码是一个32bit的值，其中值为1的比特留给网络号和子网号，为0的比特留给主机号。  
-![两种不同的B类地址子网掩码的例子](https://github.com/Balabalabalala/Learning/images/2018-04-18_193750.png)  
+![两种不同的B类地址子网掩码的例子](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/2018-04-18_193750.png)  
 图中第一个例子子网号和主机号都是8bit宽；第二个例子是一个B类地址划分成10bit的子网号和6bit的主机号。  
 子网掩码常使用十六进制来表示，当界限不是一个字节时，子网掩码是一个比特掩码。  
 在给定IP地址和子网掩码以后，主机就可以确定IP数据报的目的是本子网上的主机，本网络中其他子网中的主机还是其他网络上的主机。  
-![使用子网掩码的两个B类地址之间的比较](https://github.com/Balabalabalala/Learning/images/2018-04-18_194812.png)  
+![使用子网掩码的两个B类地址之间的比较](https://github.com/Balabalabalala/Learning/blob/master/images/tcpip/2018-04-18_194812.png)  
 
 ### 特殊情况的IP地址
 
