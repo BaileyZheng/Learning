@@ -45,6 +45,7 @@ ARP可用于其他类型的网络，可以解析IP地址以外的地址。
 对于一个ARP请求来说，除了目的端硬件地址外的所有其他的字段都有填充值，当系统收到一份目的端为本机的ARP请求报文后，它就把硬件地址填进去，然后用两个目的端地址分别替换两个发送端地址，并把操作字段置为2，最后发送回去。  
 
 ### tcpdump
+tcpdump，dump the traffic on a network，根据使用者的定义对网络上的数据包进行截获的包分析工具。tcpdump可以将网络中传送的数据包的“头”完全截获下来提供分析，支持针对网络层、协议、主机、网络或端口的过滤，并提供and、or、not等逻辑语句帮助去除无用的信息。  
 tcpdump通过将网络接口卡设置为混杂模式来截获经过网络接口的每一个分组。正常情况下，用于诸如以太网媒体的接口卡指截获送往特定接口地址或广播地址的链路层的帧。  
 底层的操作系统必须允许将一个接口设置成混杂模式，并且允许一个用户进程截获帧。  
 BSD分组过滤器BPF（BSD Packet Filter），tcpdump用它来截获和过滤来自一个被置为混杂模式的网络接口卡的分组。BFP也可以工作在点对点的链路上，如SLIP，不需要什么特别的处理就可以截获所有通过接口的分组，BPF还可以工作在环回接口上。  
@@ -70,6 +71,73 @@ SunOS 4.1.x提供了一个STREAMS伪设备驱动程序，称为网络接口分�
 
 SVR4支持数据链路提供者接口DLPI（Data Link Provider Interface），是OSI数据链路服务定义的一个流实现。向tcpdump的网络监视程序必须使用DLPI来直接访问数据链路设备驱动程序。  
 
+tcpdump输出：  
+基本上tcpdump的输出格式为：系统时间 来源主机.端口 > 目标主机.端口 数据包参数  
+tcpdump的输出格式与协议有关  
+- 链路层头
+对于FDDI网络，'-e'使tcpdump打印出指定数据包的'frame control'域，源和目的地址，以及包的长度。frame control域控制对包中其他域的解析，一般的包（如IP datagrams）都是带有'async'（异步标志）的数据包，并且有取值0到7的优先级，如'async4'代表此包为异步数据包，优先级为4.通常这些包内含一个LLC包（逻辑链路控制包），如果此包不是一个ISO datagram或所谓的SNAP包，其LLC头部会被打印。  
+对于Token Ring网络（令牌环网络）,'-e'使tcpdump打印出指定数据包的'frame control'和'access control'域，以及源和目的地址，外加包的长度。与FDDI网络类似，此数据包通常内含LLC数据包，不管是否有'-e'选项，对于此网络上的'source-routed'类型数据包，其包的源路由信息总会被打印。  
 
 
 
+
+
+截获网络中传输的数据流能看到很多不该看到的东西，如Telnet和FTP用户输入的口令在网络中传输的内容和用户输入的一样（口令的明文表示）。tcpdump及其他类似的工具的访问权限依赖于具体系统。  
+查看一个TCP连接上发生的事情的另一种方法是使能插口排错选项，这个特征只能工作在TCP上（其他协议不行）。
+
+```
+1、默认启动：
+tcpdump：普通情况下，直接启动tcpdump将监视第一个网络接口上所有流过的数据包。
+2、监视指定网络接口的数据包
+tcpdump -i eth1：如果不指定网卡，默认tcpdump只会监视第一个网络接口，一般是eth0.
+3、监视指定主机的数据包
+tcpdump host sundow:打印所有进入或离开sundown的数据包
+tcpdump host 172.29.173.111:指定ip，截获指定ip的主机收到的和发出的所有的数据包
+tcpdump host helios and \(hot or ace\):打印helios与hot或者ace之间通信的数据包
+tcpdump host ip1 and \(ip2 or ip3\):截获ip1指定的主机与ip2指定的主机或ip3指定的主机之间的通信
+tcpdump ip host ace and not helios:打印ace与除了helios外的其他任何主机之间通信的IP数据包
+tcpdump ip host ip1 and !ip2:获取ip1指定的主机与ip2指定的主机之外所有主机通信的ip包
+tcpdump -i eth0 src host hostname:截获主机hostname发送的所有数据
+tcpdump -i eth0 dst host hostname：监视所有送到主机hostname的数据包
+4、监视指定主机和端口的数据包
+tcpdump tcp port 23 and host ip1：获取ip1指定的主机接收或发出的telnet包
+tcpdump udp port 123：对本机的upd 123端口进行监视，123为ntp服务端口
+5、监视指定网络的数据包
+tcpdump net ucb-ether：打印本地主机与网络地址为ucb-ether的网络上的主机之间的所有通信数据包
+tcpdump 'gateway snup and (port ftp or ftp-data)':打印所有通过网关snup的ftp数据包，用引号防止shell对括号进行错误解析
+tcpdump ip and not net localnet：打印所有源地址或目的地址是本地主机的IP数据包（如果本地网络通过网关连到了另一网络，则另一网络并不能算作本地网络，localnet是本地网络名
+6、监视指定协议的数据包
+tcpdump 'tcp[tcpflags] & (tcp-syn|tcp-fin) != 0 and not src and dst net localnet':打印TCP会话中的开始和结束数据包，并且数据包的源或目的不是本地网络上的主机
+tcpdump 'tcp port 80 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)':
+打印所有源或目的端口是80，网络层协议为IPv4，并且含有数据，而不是SYN，FIN以及ACK-only等不含数据的数据包。
+ip[2:2]表示整个ip数据包的长度
+(ip[0]&0xf)<<2表示ip数据包包头的长度（ip[0]&0xf代表包中的IHL域，而此域的单位为32bit，要换算成字节数需要乘以4，即左移2.
+(tcp[12]&0xf0)>>4表示tcp头的长度，此域的单位也是32bit，换算成比特数为((tcp[12]&0xf0)>>4)<<2,即(tcp[12]&0xf0)>>2
+((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0表示整个ip数据包的长度减去ip头的长度，再减去tcp头的长度，结果不为0，意味着ip数据包中确实是有数据。对于IPv6版本只需考虑ipv6头中的'Payload Length'与'tcp头的长度'的差值，并且其中表达方式'ip[]'需要换成'ip6[]'
+tcpdump 'gateway snup and ip[2:2] > 576':打印长度超过576字节，并且网关地址是snup的IP数据包
+tcpdump 'ether[0] & 1 = 0 and ip[16] >= 224':打印所有IP层广播或多播的数据包，但不是物理以太网层的广播或多播数据报
+tcpdump 'icmp[icmptype] != icmp-echo and icmp[icmptype] != icmp-echoreply':打印除'echo request'或者'echo reply'类型以外的ICMP数据包，如需打印所有非ping程序产生的数据包时可用到此表达式，‘echo request’和‘echo reply’这两种类型的ICMP数据包通常由ping程序产生
+7、tcpdump与wireshark
+tcpdump tcp -i eth1 -t -s 0 -c 100 and dst port ! 22 and src net 192.168.1.0/24 -w ./target.cap
+(1)tcp:ip icmp arp rarp 和tcp udp icmp这些选项要放在第一个参数的位置，用来过滤数据报的类型
+(2)-i eth1：只抓经过接口eth1的包
+(3)-t：不显示时间戳
+(4)-s 0:抓取数据包时默认抓取长度为68字节，加上-s 0后可以抓到完整的数据包
+(5)-c 100:只抓取100个数据包
+(6)dst port ! 22:不抓取目标端口是22的数据包
+(7)src net 192.168.1.0/24：数据包的源网络地址为192.168.1.0/24
+(8)-w ./target.cap：保存成cap文件，方便用wireshark分析
+8、使用tcpdump抓取HTTP包
+tcpdump -XvvennSs 0 -i eth0 tcp[20:2]=0x4745 or tcp[20:2]=0x4854
+0x4745为GET前两个字母GE，0x4854为HTTP前两个字母HT
+tcpdump对截获的数据并没有进行彻底解码，数据包内的大部分内容是使用进制的形式直接打印输出的。者不利于分析网络故障，通常使用带-w参数的tcpdump截获数据并保存到文件中，然后再使用其他程序进行解码分析，还需要定义过滤规则，防止捕获的数据包填满整个硬盘
+```
+
+
+
+
+
+
+
+## 参考
+[1] https://www.cnblogs.com/ggjucheng/archive/2012/01/14/2322659.html
