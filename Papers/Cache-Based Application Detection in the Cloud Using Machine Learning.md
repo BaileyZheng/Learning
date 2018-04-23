@@ -1,8 +1,6 @@
 # Cache-Based Application Detection in the Cloud Using Machine Learning
 ## 论文概述
-本文提出基于机器学习的技术，根据应用的cache访问资料对应用进行分类，使用小而简单的手工处理步骤特征向量来训练模型，用支持向量机对应用进行分类取得了较大成功。特征分析和训练步骤完全是自动完成的，不需要任何代码的检查和研究来进行分类。
-
-
+本文提出基于机器学习的技术，从应用的cache访问概要中提取特征，利用这些特征训练机器学习算法模型（支持向量机），然后对应用进行分类，其中特征分析和训练步骤完全是自动完成的。在本地环境下，分类正确率达到98%（L1 cache）和 78%（LLC cache），在Amazon EC2跨虚拟机环境下正确率为60%。
 
 
 ## 笔记
@@ -54,29 +52,46 @@ L1和LLC分析的方法流图：数据收集 → 转变命中&命失 → FFT →
 先前的工作假设监视进程是同步的，同步通过触发事件处理，然后开始分析阶段。当监视进程和target不通信的时候这并不容易，而且应用中周期性地访问的函数可以通过傅里叶变换给出一些信息。因此本文将数据从时域转换成频域，消除了同步这样的强假设，提取周期函数的cache访问作为应用的指纹。  
 - 无需去重  
 大页+Prime&Probe，结果分析的辨识度比flush+reload低，但是在训练足够的数据后，能有效检测其他共驻虚拟机使用的程序。  
-- 检测动态代码  
+- 检测动态代码  
+- Long profiles
 
+```
+Fs = FCPU/Tcc  //采样频率
+for i from 1 to NS do //每个应用
+  for j from 1 to ND do  //每个测试的数据集
+    for k from 0 to SL1-1 do  // L1 cache的每个set
+      for l from 1 to NT do   //收集的每个轨迹
+        if R(i; j; k; l) o then
+          R(i; j; k; l) = median(R(i; j; k; 1 : NT))
+        end if
+        if R(i; j; k; l) c then
+          B(i; j; k; l) = 1
+        else
+          B(i; j; k; l) = 0
+        end if
+      end for
+      L(i; j; k) = F F T [B(i; j; k; 1 : NT)]
+    end for
+    Lfi,j = L(i; j; 0 : SL-1)
+  end for
+end for
 
+```
 
+在云上检测ping的步骤：  
+- spy vm1 找出嘈杂的set，并将它们从vm1的sl3 set中挤出去
+- spy vm2以一定频率发送ping请求  
+- spy vm1在剩余set上实现prime&probe
+- spy vm1确定llc中活动的set  
+- 对活动set使用傅里叶变换  
+- 将ping频率和频率成分比较
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## 知识点
-
-## 疑惑
-- 怎么检测云上的共驻实例？
+缓解措施 
+- 禁用大页  
+由于spy在为Prime&Probe创建排出集的时候需要分配大页，所以VMM禁用大页之后，很难创建排出集，监视其他虚拟机的效率显著下降  
+- 私有化LLC分片：  
+共驻主机如果在同一个物理机上可以使用整个LLC，所以如果LLC在云上被每个虚拟机分开，profiling阶段就不可能了，但是这对cache架构来说并不现实  
+- 对LLC添加噪音：  
+通过刷一些cache line避免LLC profiling，即使被监视的应用没有挤出去一个LLC set中的行，spy也会有cache miss，添加噪声会改变hit-miss的频域，机器学习算法成功率会下降  
+- 页着色：  
+页着色是一个软件技术，管理内存页如何映射到cache line，页着色可以动态地划分LLC，从而限制多租户云中基于cache的侧信道泄露，这样spy虚拟机不能干涉云中其他虚拟机，但是这个方式带来性能开销。
